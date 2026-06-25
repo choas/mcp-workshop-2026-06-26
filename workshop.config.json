@@ -1,0 +1,31 @@
+{
+  "workshop": {
+    "name": "Build Your Own MCP Server and Develop AI Agents from Scratch",
+    "conference": "VibeKode Munich 2026",
+    "date": "2026-06-26",
+    "trainer": "Lars Gregori"
+  },
+  "ports": {
+    "notesApi": 3001,
+    "externalApisProxy": 3002
+  },
+  "database": {
+    "filename": "notes.db",
+    "relativePath": "./data"
+  },
+  "externalApis": {
+    "weather": {
+      "baseUrl": "https://wttr.in",
+      "format": "?format=j1"
+    },
+    "quotes": {
+      "baseUrl": "https://api.quotable.io",
+      "randomEndpoint": "/random"
+    }
+  },
+  "mcp": {
+    "serverName": "personal-knowledge-assistant",
+    "version": "1.0.0",
+    "description": "A personal knowledge management MCP server"
+  }
+}

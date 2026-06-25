@@ -1,0 +1,20 @@
+{
+  "name": "step-01-notes-api",
+  "version": "1.0.0",
+  "description": "Notes REST API built on Node.js built-in http and node:sqlite",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "tsx src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/node": "22.20.0",
+    "tsx": "4.22.4",
+    "typescript": "5.9.3"
+  }
+}
