@@ -13,6 +13,7 @@ import {
   handleAddNote,
   handleSearchNotes,
   handleListNotes,
+  handleUpdateNote,
   handleDeleteNote,
 } from './notes.js';
 
@@ -43,6 +44,9 @@ export function registerTools(server: Server, db: DatabaseSync): void {
 
       case 'list_notes':
         return handleListNotes(db, args as { limit?: number });
+
+      case 'update_note':
+        return handleUpdateNote(db, args as { id?: number; content?: string; tags?: string[] });
 
       case 'delete_note':
         return handleDeleteNote(db, args as { id?: number });
