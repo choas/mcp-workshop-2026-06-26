@@ -74,6 +74,31 @@ export function listNotes(db: DatabaseSync, limit: number = 10): Note[] {
   return stmt.all(limit) as unknown as Note[];
 }
 
+export function updateNote(
+  db: DatabaseSync,
+  id: number,
+  updates: { content?: string; tags?: string[] }
+): Note | null {
+  const existing = db.prepare('SELECT * FROM notes WHERE id = ?').get(id) as unknown as Note | undefined;
+  if (!existing) {
+    return null;
+  }
+
+  const content = updates.content ?? existing.content;
+
+  let tagsString = existing.tags;
+  if (updates.tags !== undefined) {
+    tagsString = updates.tags.length > 0 ? updates.tags.join(',') : null;
+  }
+
+  const stmt = db.prepare(`
+    UPDATE notes SET content = ?, tags = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?
+  `);
+  stmt.run(content, tagsString, id);
+
+  return db.prepare('SELECT * FROM notes WHERE id = ?').get(id) as unknown as Note;
+}
+
 export function deleteNote(db: DatabaseSync, id: number): boolean {
   const stmt = db.prepare('DELETE FROM notes WHERE id = ?');
   const result = stmt.run(id);

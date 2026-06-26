@@ -2,7 +2,7 @@
 // Per MCP_IMPLEMENTATION_CONCEPT.md tools/notes.ts section
 
 import type { DatabaseSync } from 'node:sqlite';
-import { addNote, searchNotes, listNotes, deleteNote, type Note } from '../database.js';
+import { addNote, searchNotes, listNotes, updateNote, deleteNote, type Note } from '../database.js';
 
 // Tool definitions for notes
 export const noteToolDefinitions = [
@@ -50,6 +50,29 @@ export const noteToolDefinitions = [
           description: "Maximum number of notes to return (default: 10)"
         }
       }
+    }
+  },
+  {
+    name: "update_note",
+    description: "Update an existing note's content and/or tags",
+    inputSchema: {
+      type: "object",
+      properties: {
+        id: {
+          type: "number",
+          description: "Note ID to update"
+        },
+        content: {
+          type: "string",
+          description: "New content (optional)"
+        },
+        tags: {
+          type: "array",
+          items: { type: "string" },
+          description: "New tags (optional)"
+        }
+      },
+      required: ["id"]
     }
   },
   {
@@ -147,6 +170,38 @@ export function handleListNotes(
     const formatted = notes.map(formatNote).join('\n\n---\n\n');
     return {
       content: [{ type: "text", text: `Showing ${notes.length} note(s):\n\n${formatted}` }]
+    };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    return {
+      content: [{ type: "text", text: `DatabaseSync error: ${message}` }],
+      isError: true
+    };
+  }
+}
+
+export function handleUpdateNote(
+  db: DatabaseSync,
+  args: { id?: number | string; content?: string; tags?: string[] }
+): { content: Array<{ type: string; text: string }>; isError?: boolean } {
+  const id = typeof args.id === 'string' ? parseInt(args.id, 10) : args.id;
+  if (typeof id !== 'number' || isNaN(id)) {
+    return {
+      content: [{ type: "text", text: "Error: id is required and must be a number" }],
+      isError: true
+    };
+  }
+
+  try {
+    const note = updateNote(db, id, { content: args.content, tags: args.tags });
+    if (!note) {
+      return {
+        content: [{ type: "text", text: `Note ${id} not found` }],
+        isError: true
+      };
+    }
+    return {
+      content: [{ type: "text", text: `Note updated successfully:\n${formatNote(note)}` }]
     };
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown error';
